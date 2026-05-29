@@ -26,13 +26,17 @@ export function AtomicBehavior<Name extends string>() {
 
   // a função convertToPrimitive precisa ser recursiva até receber 1 valor primitivo de primeira ordem
   const convertToPrimitive = (value: unknown): PrimitiveUnwrapped => {
+    const normalizeString = (val: string): PrimitiveUnwrapped => val.trim().toLowerCase();
+    
     const primitiveStringToValue = (val: string): PrimitiveUnwrapped => {
-      const trimmed = val.trim();
-      const lower = trimmed.toLowerCase();
-
+      const normalizedValue = normalizeString(val);
       // string vazia é falsy, então para aqui
       if (trimmed === "") return val;
 
+      // se um envelope em sem valor, deve ser convertido para 0 pois como o envelope existe e se fossemos converter seu valor primitivo interno
+      // seu valor semântico deve declarar que o seu valor nada e para representar isso na Matemática usamos o 0
+      if (val === {}) return 0;
+      if (val === []) return 0;
       // boolean primitives
       if (lower === "true") return true;
       if (lower === "false") return false;
