@@ -11,6 +11,13 @@ function getPrimitiveType(b::AtomicBehavior{T}, v::T) where T
 end
 
 function validate(b::AtomicBehavior, value)
+    if b.name == "PersonEmail"
+        prim = convertToPrimitive(b, value)
+        if typeof(prim) == String
+            return occursin(r"^[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+$", prim)
+        end
+        return false
+    end
     return false
 end
 
@@ -94,6 +101,9 @@ function convertToPrimitive(b::AtomicBehavior, value)
 end
 
 function forge(b::AtomicBehavior{T}, v::T) where T
+    if b.name == "PersonEmail" && !validate(b, v)
+        error("Validation failed for SemanticType: $(b.name)")
+    end
     return v
 end
 

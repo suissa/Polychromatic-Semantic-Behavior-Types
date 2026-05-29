@@ -24,9 +24,9 @@ typedef struct {
 } ForgerValue;
 
 ForgerValue getPrimitiveType(ForgerValue v);
-bool validate(ForgerValue v);
+bool validate(const char* name, ForgerValue v);
 ForgerValue convertToPrimitive(ForgerValue v);
-ForgerValue forge(ForgerValue v);
+ForgerValue forge(const char* name, ForgerValue v);
 ForgerValue proccessValue(ForgerValue v);
 
 #endif

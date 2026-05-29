@@ -22,6 +22,15 @@ namespace SemanticTypeForgers
 
             public bool Validate(object value)
             {
+                if (name == "PersonEmail")
+                {
+                    object prim = ConvertToPrimitive(value);
+                    if (prim is string s)
+                    {
+                        return Regex.IsMatch(s, @"^[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+$");
+                    }
+                    return false;
+                }
                 return false;
             }
 
@@ -77,6 +86,10 @@ namespace SemanticTypeForgers
 
             public T Forge(T v)
             {
+                if (name == "PersonEmail" && !Validate(v))
+                {
+                    throw new Exception($"Validation failed for SemanticType: {name}");
+                }
                 return v;
             }
 

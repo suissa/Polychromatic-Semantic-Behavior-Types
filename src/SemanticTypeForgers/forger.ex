@@ -1,12 +1,23 @@
 defmodule SemanticTypeForgers.Forger do
   defmodule AtomicBehavior do
-    def new(_name) do
-      %{}
+    def new(name) do
+      %{name: name}
     end
 
     def set_semantic_type(v), do: v
     def get_primitive_type(v), do: v
-    def validate(_value), do: false
+    def validate(behavior, value) do
+      if behavior.name == "PersonEmail" do
+        prim = convert_to_primitive(value)
+        if is_binary(prim) do
+          Regex.match?(~r/^[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+$/, prim)
+        else
+          false
+        end
+      else
+        false
+      end
+    end
 
     def primitive_string_to_value(val) do
       trimmed = String.trim(val)
@@ -63,10 +74,15 @@ defmodule SemanticTypeForgers.Forger do
       end
     end
 
-    def forge(v), do: v
+    def forge(behavior, v) do
+      if behavior.name == "PersonEmail" and not validate(behavior, v) do
+        raise "Validation failed for SemanticType: #{behavior.name}"
+      end
+      v
+    end
 
-    def proccess_value(value) do
-      if validate(value) do
+    def proccess_value(behavior, value) do
+      if validate(behavior, value) do
         value
       else
         if is_map(value) and map_size(value) > 0 and (Map.has_key?(value, "productPrice") or Map.has_key?(value, :productPrice)) do
@@ -76,12 +92,12 @@ defmodule SemanticTypeForgers.Forger do
           p_fees = convert_to_primitive(Map.get(value, "paymentFees") || Map.get(value, :paymentFees)) || 0
 
           if is_number(p_price) do
-            forge(p_price - p_discount + d_price + p_fees)
+            forge(behavior, p_price - p_discount + d_price + p_fees)
           else
-            forge(convert_to_primitive(value))
+            forge(behavior, convert_to_primitive(value))
           end
         else
-          forge(convert_to_primitive(value))
+          forge(behavior, convert_to_primitive(value))
         end
       end
     end

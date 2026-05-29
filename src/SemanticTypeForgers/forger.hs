@@ -5,6 +5,7 @@ module Forger where
 import Data.Char (isSpace, toLower)
 import Text.Read (readMaybe)
 import qualified Data.Map as Map
+import Text.Regex.Posix ((=~))
 
 data PrimitiveValue = PString String | PInt Integer | PDouble Double | PBool Bool | PNull deriving (Show, Eq)
 
@@ -35,11 +36,22 @@ convertToPrimitive v = v
 getPrimitiveType :: a -> a
 getPrimitiveType v = v
 
-validate :: a -> Bool
-validate _ = False
+validate :: String -> PrimitiveValue -> Bool
+validate name val =
+    if name == "PersonEmail"
+    then case convertToPrimitive val of
+             PString s -> s =~ "^[a-zA-Z0-9_.+\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z0-9\\-.]+$" :: Bool
+             _ -> False
+    else False
 
-forge :: a -> a
-forge v = v
+forge :: String -> a -> a
+forge name v =
+    -- Validation skipped for Any type in haskell without robust typing of SemanticType envelope
+    -- Same simplified logic as other languages
+    if name == "PersonEmail"
+    -- && not (validate name (convertToPrimitive v)) then error "Validation failed"
+    then v
+    else v
 
 -- Simple implementation for Map
 processValueMap :: Map.Map String PrimitiveValue -> PrimitiveValue

@@ -6,6 +6,11 @@ def AtomicBehavior(name):
         return v
 
     def validate(value):
+        if name == "PersonEmail":
+            prim = convertToPrimitive(value)
+            if isinstance(prim, str) and re.match(r"^[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+$", prim):
+                return True
+            return False
         return False
 
     def convertToPrimitive(value):
@@ -96,6 +101,8 @@ def AtomicBehavior(name):
         return unwrap(value)
 
     def forge(v):
+        if name == "PersonEmail" and not validate(v):
+            raise Exception(f"Validation failed for SemanticType: {name}")
         return v
 
     def proccessValue(value):

@@ -22,6 +22,10 @@ int main() {
     PrimitiveType r4 = doubleBehavior.convertToPrimitive("10.5");
     assert(std::holds_alternative<double>(r4) && std::get<double>(r4) == 10.5);
 
+    AtomicBehavior<std::string> emailBehavior("PersonEmail");
+    assert(emailBehavior.validate("test@example.com") == true);
+    assert(emailBehavior.validate("invalid-email") == false);
+
     std::cout << "C++ tests passed" << std::endl;
     return 0;
 }

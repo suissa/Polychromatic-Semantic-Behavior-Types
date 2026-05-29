@@ -28,6 +28,23 @@ public class forger_tests {
             throw new RuntimeException("Test Failed: expected 13.0 got " + val);
         }
 
+        forger.AtomicBehavior<Object> emailBehavior = new forger.AtomicBehavior<>("PersonEmail");
+        if (!emailBehavior.validate("test@example.com")) {
+            throw new RuntimeException("Test Failed: valid email not validated");
+        }
+        if (emailBehavior.validate("invalid-email")) {
+            throw new RuntimeException("Test Failed: invalid email validated");
+        }
+
+        try {
+            emailBehavior.forge("invalid-email");
+            throw new RuntimeException("Test Failed: Should have thrown validation exception");
+        } catch (Exception e) {
+            if (!e.getMessage().contains("Validation failed")) {
+                throw new RuntimeException("Test Failed: Wrong exception thrown: " + e.getMessage());
+            }
+        }
+
         System.out.println("Java tests passed");
     }
 }

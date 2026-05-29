@@ -24,6 +24,14 @@ func (a *AtomicBehavior[T]) GetPrimitiveType(v T) T {
 }
 
 func (a *AtomicBehavior[T]) Validate(value any) bool {
+	if a.Name == "PersonEmail" {
+		prim := a.ConvertToPrimitive(value)
+		if s, ok := prim.(string); ok {
+			re := regexp.MustCompile(`^[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+$`)
+			return re.MatchString(s)
+		}
+		return false
+	}
 	return false
 }
 
@@ -116,6 +124,9 @@ func (a *AtomicBehavior[T]) ConvertToPrimitive(value any) any {
 }
 
 func (a *AtomicBehavior[T]) Forge(v T) T {
+	if a.Name == "PersonEmail" && !a.Validate(v) {
+		panic("Validation failed for SemanticType: " + a.Name)
+	}
 	return v
 }
 

@@ -15,4 +15,7 @@ main = do
     let m = Map.fromList [("productPrice", PString "10.5"), ("deliveryPrice", PDouble 2.5)]
     unless (processValueMap m == PDouble 13.0) $ error "Test failed"
 
+    unless (validate "PersonEmail" (PString "test@example.com") == True) $ error "Test failed"
+    unless (validate "PersonEmail" (PString "invalid-email") == False) $ error "Test failed"
+
     putStrLn "Haskell tests passed"

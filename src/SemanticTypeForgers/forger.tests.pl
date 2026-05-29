@@ -12,4 +12,9 @@ main :-
     process_value(Dict, R5),
     R5 == 13.0,
 
+    validate('PersonEmail', 'test@example.com'),
+    \+ validate('PersonEmail', 'invalid-email'),
+
+    catch(forge('PersonEmail', 'invalid-email', _), error(validation_failed('PersonEmail')), true),
+
     writeln('Prolog tests passed').

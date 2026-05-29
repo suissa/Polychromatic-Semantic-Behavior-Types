@@ -13,6 +13,13 @@ module SemanticTypeForgers
     end
 
     def validate(value)
+      if @name == "PersonEmail"
+        prim = convertToPrimitive(value)
+        if prim.is_a?(String) && prim.match?(/^[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+$/)
+          return true
+        end
+        return false
+      end
       false
     end
 
@@ -75,6 +82,9 @@ module SemanticTypeForgers
     end
 
     def forge(v)
+      if @name == "PersonEmail" && !validate(v)
+        raise "Validation failed for SemanticType: #{@name}"
+      end
       v
     end
 

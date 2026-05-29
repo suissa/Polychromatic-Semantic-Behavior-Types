@@ -15,4 +15,15 @@ val = behavior.proccessValue({
 
 raise "Test failed: expected 13.0 got #{val}" unless val == 13.0
 
+email_behavior = SemanticTypeForgers::AtomicBehavior.new("PersonEmail")
+raise "Test failed" unless email_behavior.validate("test@example.com") == true
+raise "Test failed" unless email_behavior.validate("invalid-email") == false
+
+begin
+  email_behavior.forge("invalid-email")
+  raise "Test failed: should have thrown"
+rescue => e
+  raise e unless e.message.include?("Validation failed")
+end
+
 puts "Ruby tests passed"

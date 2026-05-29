@@ -23,5 +23,9 @@ fn main() {
     let r4 = behavior.process_value_map(&map);
     assert_eq!(r4, PrimitiveValue::Float(13.0));
 
+    let email_behavior = AtomicBehavior::<String>::new("PersonEmail");
+    assert_eq!(email_behavior.validate(&PrimitiveValue::String("test@example.com".to_string())), true);
+    assert_eq!(email_behavior.validate(&PrimitiveValue::String("invalid-email".to_string())), false);
+
     println!("Rust tests passed");
 }

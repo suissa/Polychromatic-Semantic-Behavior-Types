@@ -18,6 +18,13 @@ class AtomicBehavior {
     }
 
     public function validate($value) {
+        if ($this->name === 'PersonEmail') {
+            $prim = $this->convertToPrimitive($value);
+            if (is_string($prim)) {
+                return (bool) preg_match('/^[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+$/', $prim);
+            }
+            return false;
+        }
         return false;
     }
 
@@ -97,6 +104,9 @@ class AtomicBehavior {
     }
 
     public function forge($v) {
+        if ($this->name === 'PersonEmail' && !$this->validate($v)) {
+            throw new \Exception("Validation failed for SemanticType: {$this->name}");
+        }
         return $v;
     }
 

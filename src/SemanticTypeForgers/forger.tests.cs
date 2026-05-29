@@ -23,6 +23,20 @@ namespace SemanticTypeForgers
             var val = behavior.ProcessValue(map);
             if (!val.Equals(13.0)) throw new Exception($"Test failed: Expected 13.0 got {val}");
 
+            var emailBehavior = new Forger.AtomicBehavior<object>("PersonEmail");
+            if (!emailBehavior.Validate("test@example.com")) throw new Exception("Test failed: valid email");
+            if (emailBehavior.Validate("invalid-email")) throw new Exception("Test failed: invalid email");
+
+            try
+            {
+                emailBehavior.Forge("invalid-email");
+                throw new Exception("Test failed: should have thrown on invalid forge");
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.Contains("Validation failed")) throw;
+            }
+
             Console.WriteLine("C# tests passed");
         }
     }

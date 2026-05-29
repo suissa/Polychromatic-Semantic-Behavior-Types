@@ -2,7 +2,13 @@
 
 get_primitive_type(V, V).
 
-validate(_, false).
+validate(Name, Value) :-
+    ( Name == 'PersonEmail' ->
+        convert_to_primitive(Value, Prim),
+        ( atom(Prim) -> atom_string(Prim, Str) ; string(Prim) -> Str = Prim ; false ),
+        re_match('^[a-zA-Z0-9_.+\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z0-9\\-.]+$'/i, Str)
+    ; false
+    ).
 
 primitive_string_to_value(Val, Res) :-
     normalize_space(atom(Trimmed), Val),
@@ -22,7 +28,10 @@ convert_to_primitive(Val, Res) :-
     ; Res = Val
     ).
 
-forge(V, V).
+forge(Name, V, Res) :-
+    ( Name == 'PersonEmail', \+ validate(Name, V) -> throw(error(validation_failed(Name)))
+    ; Res = V
+    ).
 
 process_value(Dict, Res) :-
     is_dict(Dict),
@@ -33,8 +42,8 @@ process_value(Dict, Res) :-
     ( get_dict(paymentFees, Dict, PFeesRaw) -> convert_to_primitive(PFeesRaw, PFees) ; PFees = 0 ),
     number(PPrice),
     FinalPrice is PPrice - PDiscount + DPrice + PFees,
-    forge(FinalPrice, Res).
+    forge('test', FinalPrice, Res).
 process_value(Val, Res) :-
     \+ is_dict(Val),
     convert_to_primitive(Val, Prim),
-    forge(Prim, Res).
+    forge('test', Prim, Res).

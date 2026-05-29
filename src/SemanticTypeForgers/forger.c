@@ -93,7 +93,20 @@ ForgerValue getPrimitiveType(ForgerValue v) {
     return v;
 }
 
-bool validate(ForgerValue v) {
+bool validate(const char* name, ForgerValue v) {
+    if (name && strcmp(name, "PersonEmail") == 0) {
+        ForgerValue prim = convertToPrimitive(v);
+        if (prim.type == TYPE_STRING) {
+            regex_t regex;
+            int ret = regcomp(&regex, "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9.-]+$", REG_EXTENDED);
+            if (ret == 0) {
+                int match = regexec(&regex, prim.data.string_val, 0, NULL, 0);
+                regfree(&regex);
+                return match == 0;
+            }
+        }
+        return false;
+    }
     return false;
 }
 
@@ -104,15 +117,19 @@ ForgerValue convertToPrimitive(ForgerValue v) {
     return v;
 }
 
-ForgerValue forge(ForgerValue v) {
+ForgerValue forge(const char* name, ForgerValue v) {
+    if (name && strcmp(name, "PersonEmail") == 0 && !validate(name, v)) {
+        printf("Validation failed for SemanticType: %s\n", name);
+        exit(1);
+    }
     return v;
 }
 
 ForgerValue proccessValue(ForgerValue v) {
-    if (validate(v)) return v;
+    if (validate("test", v)) return v;
 
     // In C, processing a complex Object dynamically without an interpreter is non-trivial.
     // We will just return the converted primitive for now as an approximation.
     ForgerValue primitiveVal = convertToPrimitive(v);
-    return forge(primitiveVal);
+    return forge("test", primitiveVal);
 }

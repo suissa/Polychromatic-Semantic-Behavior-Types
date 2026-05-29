@@ -26,6 +26,13 @@ public class forger {
         }
 
         public boolean validate(Object value) {
+            if ("PersonEmail".equals(this.name)) {
+                Object prim = convertToPrimitive(value);
+                if (prim instanceof String) {
+                    return Pattern.matches("^[a-zA-Z0-9_.+\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z0-9\\-.]+$", (String) prim);
+                }
+                return false;
+            }
             return false;
         }
 
@@ -106,6 +113,9 @@ public class forger {
         }
 
         public T forge(T v) {
+            if ("PersonEmail".equals(this.name) && !validate(v)) {
+                throw new RuntimeException("Validation failed for SemanticType: " + this.name);
+            }
             return v;
         }
 

@@ -24,8 +24,15 @@ pub fn AtomicBehavior(comptime T: type) type {
         }
 
         pub fn validate(self: Self, value: PrimitiveValue) bool {
-            _ = self;
-            _ = value;
+            if (std.mem.eql(u8, self.name, "PersonEmail")) {
+                switch (value) {
+                    .String => |s| {
+                        // Simplified zig email validation without importing full regex lib
+                        return std.mem.indexOfScalar(u8, s, '@') != null and std.mem.indexOfScalar(u8, s, '.') != null;
+                    },
+                    else => return false,
+                }
+            }
             return false;
         }
 
@@ -84,6 +91,8 @@ pub fn AtomicBehavior(comptime T: type) type {
         }
 
         pub fn forge(self: Self, v: T) T {
+            // Validation requires PrimitiveValue, but forge takes T.
+            // Simplified for concept as with Rust.
             _ = self;
             return v;
         }

@@ -3,7 +3,20 @@
 
 get_primitive_type(V) -> V.
 
-validate(_) -> false.
+validate(Name, Value) ->
+    case Name of
+        "PersonEmail" ->
+            Prim = convert_to_primitive(Value),
+            if
+                is_list(Prim) ->
+                    case re:run(Prim, "^[a-zA-Z0-9_.+\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z0-9\\-.]+$", [{capture, none}]) of
+                        match -> true;
+                        nomatch -> false
+                    end;
+                true -> false
+            end;
+        _ -> false
+    end.
 
 trim(S) -> string:trim(S).
 to_lower(S) -> string:lowercase(S).
@@ -62,10 +75,18 @@ convert_to_primitive(Value) ->
         _:_ -> null
     end.
 
-forge(V) -> V.
+forge(Name, V) ->
+    case Name of
+        "PersonEmail" ->
+            case validate(Name, V) of
+                true -> V;
+                false -> erlang:error("Validation failed for SemanticType: PersonEmail")
+            end;
+        _ -> V
+    end.
 
-proccess_value(Value) ->
-    case validate(Value) of
+proccess_value(Name, Value) ->
+    case validate(Name, Value) of
         true -> Value;
         false ->
             if
@@ -77,11 +98,11 @@ proccess_value(Value) ->
 
                     if
                         is_integer(PPrice) orelse is_float(PPrice) ->
-                            forge(PPrice - PDiscount + DPrice + PFees);
+                            forge(Name, PPrice - PDiscount + DPrice + PFees);
                         true ->
-                            forge(convert_to_primitive(Value))
+                            forge(Name, convert_to_primitive(Value))
                     end;
                 true ->
-                    forge(convert_to_primitive(Value))
+                    forge(Name, convert_to_primitive(Value))
             end
     end.

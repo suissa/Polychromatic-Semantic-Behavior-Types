@@ -18,4 +18,17 @@ $val = $behavior->proccessValue([
 
 if ($val !== 13.0) throw new Exception("Test failed: expected 13.0 got " . $val);
 
+$emailBehavior = new AtomicBehavior("PersonEmail");
+if ($emailBehavior->validate("test@example.com") !== true) throw new Exception("Test failed: valid email");
+if ($emailBehavior->validate("invalid-email") !== false) throw new Exception("Test failed: invalid email");
+
+try {
+    $emailBehavior->forge("invalid-email");
+    throw new Exception("Test failed: should have thrown on invalid forge");
+} catch (Exception $e) {
+    if (strpos($e->getMessage(), "Validation failed") === false) {
+        throw $e;
+    }
+}
+
 echo "PHP tests passed\n";

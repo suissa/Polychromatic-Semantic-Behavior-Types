@@ -31,6 +31,16 @@ int main() {
     ForgerValue r4 = convertToPrimitive(v4);
     assert(r4.type == TYPE_INT && r4.data.int_val == 0);
 
+    ForgerValue v5;
+    v5.type = TYPE_STRING;
+    v5.data.string_val = "test@example.com";
+    assert(validate("PersonEmail", v5) == true);
+
+    ForgerValue v6;
+    v6.type = TYPE_STRING;
+    v6.data.string_val = "invalid-email";
+    assert(validate("PersonEmail", v6) == false);
+
     printf("C tests passed\n");
     return 0;
 }

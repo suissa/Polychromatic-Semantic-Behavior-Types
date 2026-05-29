@@ -14,4 +14,12 @@ local val = behavior.proccessValue({
 
 assert(val == 13.0, "Test failed: expected 13.0 got " .. tostring(val))
 
+local emailBehavior = forger.AtomicBehavior("PersonEmail")
+assert(emailBehavior.validate("test@example.com") == true, "Test failed")
+assert(emailBehavior.validate("invalid-email") == false, "Test failed")
+
+local status, err = pcall(function() emailBehavior.forge("invalid-email") end)
+assert(not status, "Test failed: should have thrown")
+assert(err:match("Validation failed"), "Test failed: wrong error")
+
 print("Lua tests passed")

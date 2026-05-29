@@ -15,4 +15,15 @@ val = Forger.proccessValue(behavior, Dict(
 
 @assert val == 13.0 "Test failed: expected 13.0 got $val"
 
+emailBehavior = AtomicBehavior{Any}("PersonEmail")
+@assert Forger.validate(emailBehavior, "test@example.com") == true
+@assert Forger.validate(emailBehavior, "invalid-email") == false
+
+try
+    Forger.forge(emailBehavior, "invalid-email")
+    error("Test failed: should have thrown")
+catch e
+    @assert occursin("Validation failed", e.msg)
+end
+
 println("Julia tests passed")

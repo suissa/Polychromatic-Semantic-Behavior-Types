@@ -28,6 +28,10 @@ pub fn main() !void {
     const r4 = try behavior.processValueMap(allocator, map);
     if (r4.Float != 13.0) return error.TestFailed;
 
+    const email_behavior = forger.AtomicBehavior(i64).init("PersonEmail");
+    if (!email_behavior.validate(PrimitiveValue{ .String = "test@example.com" })) return error.TestFailed;
+    if (email_behavior.validate(PrimitiveValue{ .String = "invalid" })) return error.TestFailed;
+
     const stdout = std.io.getStdOut().writer();
     try stdout.print("Zig tests passed\n", .{});
 }

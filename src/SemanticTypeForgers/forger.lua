@@ -13,6 +13,13 @@ function forger.AtomicBehavior(name)
     end
 
     function self.validate(value)
+        if self.name == "PersonEmail" then
+            local prim = self.convertToPrimitive(value)
+            if type(prim) == "string" then
+                return prim:match("^[a-zA-Z0-9_.+%-]+@[a-zA-Z0-9%-]+%.[a-zA-Z0-9%-.]+$") ~= nil
+            end
+            return false
+        end
         return false
     end
 
@@ -87,6 +94,9 @@ function forger.AtomicBehavior(name)
     end
 
     function self.forge(v)
+        if self.name == "PersonEmail" and not self.validate(v) then
+            error("Validation failed for SemanticType: " .. self.name)
+        end
         return v
     end
 
