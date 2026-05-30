@@ -141,3 +141,11 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+__pycache__/
+*.class
+forger_tests_c
+forger_tests_cpp
+forger_tests_rs
+
+target/
